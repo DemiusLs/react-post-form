@@ -1,10 +1,51 @@
-import { useState } from 'react'
+import axios from 'axios'
+import { useEffect, useState } from 'react'
 
 
 function App() {
 
+  const postLink = "https://67c5b4f3351c081993fb1ab6.mockapi.io/api/posts"
+  const initialposts = {
+    author: "",
+    title: "",
+    body: "",
+    public: false,
+
+  }
 
 
+  const [postData, setpostData] = useState(initialposts)
+
+
+
+  const handleChange = (e) => {
+    console.log(e.target.value)
+
+    const { name, value, type, checked } = e.target
+
+    setpostData({ ...postData, [name]: type === "checkbox" ? checked : value })
+    console.log(postData)
+  }
+
+  const sendPost = (event) => {
+
+    event.preventDefault();
+
+
+
+    axios
+      .post(postLink, postData)
+      .then(resp => {
+        console.log(resp)
+
+        if (resp.data.id) {
+          setpostData(initialposts)
+        }
+
+
+      })
+
+  }
 
   return (
     <>
@@ -13,24 +54,28 @@ function App() {
         <h1 className='text-center py-4'>React Post Form </h1>
 
         <div className="row d-flex justify-content-center">
-          <form className='col-10'>
+          <form className='col-10' onSubmit={sendPost}>
             <div className="mb-3">
               <label htmlFor="author" className="form-label">Author</label>
-              <input type="text" className="form-control" id="author" aria-describedby="emailHelp" />
+              <input type="text" className="form-control" id="author" name="author" value={postData.author} onChange={handleChange} />
             </div>
             <div className="mb-3">
               <label htmlFor="title" className="form-label">Title</label>
-              <input type="text" className="form-control" id="title" />
+              <input type="text" className="form-control" id="title" name="title" value={postData.title} onChange={handleChange} />
             </div>
-            <div class="mb-3">
-              <label for="exampleFormControlTextarea1" class="form-label">Post content</label>
-              <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+            <div className="mb-3">
+              <label htmlFor="text-area" className="form-label">Post content</label>
+              <textarea className="form-control" id="text-area" rows="3" name="body" value={postData.body} onChange={handleChange} ></textarea>
+
+
+
+
             </div>
             <div className="mb-3 form-check">
-              <input type="checkbox" className="form-check-input" id="exampleCheck1" />
-              <label className="form-check-label" htmlFor="exampleCheck1">Public</label>
+              <input type="checkbox" className="form-check-input" id="exampleCheck1" name="public" checked={postData.public} onChange={handleChange} />
+              <label className="form-check-label" htmlFor="exampleCheck1" >Public</label>
             </div>
-            <button type="submit" className="btn btn-primary ">Submit</button>
+            <button type="submit" className="btn btn-primary " >Submit</button>
           </form>
         </div>
 
